@@ -3,6 +3,7 @@ import markdown
 import zipfile
 import shutil
 import sys
+from os import listdir
 
 def unzip_roam(filename):
     with zipfile.ZipFile(f"{filename}.zip", 'r') as zip_ref:
@@ -15,7 +16,7 @@ def read_exported_file(ref_name):
     return text
 
 def store_updated_file(ref_name, html):
-    f = open(f"./data/{ref_name}.html", "w")
+    f = open(f"./docs/{ref_name}.html", "w")
     f.write(html)
     f.close()
 
@@ -62,11 +63,16 @@ def process_ref(ref_name):
     store_updated_file(ref_name, final_html)
     return set(refs)
 
-def text_to_html(text, title):
-    html = markdown.markdown(text, output_format='html4')
-    if not len(html):
-        html = '<a href="javascript:history.back()">Essa pagina ainda não foi criada. Volte para a página anterior!</a>'
-    
+def create_index():
+    files = [name.replace(".html", "")for name in listdir("./docs")]
+    html = "<h1>Lista de páginas disponíveis:</h1>"
+    for name in files:
+        link = name.replace(" ","%20").replace("?","%3F")
+        html += f'<p><a href="{link}.html">{name}</a>'
+    full_html = create_full_html(html, "Inicio")
+    store_updated_file("index", full_html)
+
+def create_full_html(html_body, title):
     style = """<style>
         p {
         padding: 0 5em;
@@ -84,10 +90,17 @@ def text_to_html(text, title):
 
     <body>
     <h1>{title}</h1>
-    {html}
+    {html_body}
     </body>
 
     </html>'''
+    return final_html
+
+def text_to_html(text, title):
+    html = markdown.markdown(text, output_format='html4')
+    if not len(html):
+        html = '<a href="javascript:history.back()">Essa pagina ainda não foi criada. Volte para a página anterior!</a>'
+    final_html = create_full_html(html, title)
     return final_html
 
 def process_tree(starter_name, roam_filename):
@@ -107,6 +120,7 @@ def process_tree(starter_name, roam_filename):
         inline_refs.update(used_refs)
         inline_refs = inline_refs-imported_refs
     shutil.rmtree("./Roam-Export")
+    create_index()
 
 def example():
     roam_filename = "Roam-Export-1647102847501"
