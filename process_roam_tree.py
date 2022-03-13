@@ -64,7 +64,9 @@ def process_ref(ref_name):
     return set(refs)
 
 def create_index():
-    files = [name.replace(".html", "")for name in listdir("./docs")]
+    files = {name.replace(".html", "") for name in listdir("./docs")}
+    ignore_files = set(["TODO", "index"])
+    files = files - ignore_files
     html = "<h1>Lista de páginas disponíveis:</h1>"
     for name in files:
         link = name.replace(" ","%20").replace("?","%3F")
