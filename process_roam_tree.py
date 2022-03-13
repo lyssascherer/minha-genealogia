@@ -4,6 +4,7 @@ import zipfile
 import shutil
 import sys
 from os import listdir
+from datetime import date
 
 def unzip_roam(filename):
     with zipfile.ZipFile(f"{filename}.zip", 'r') as zip_ref:
@@ -65,12 +66,15 @@ def process_ref(ref_name):
 
 def create_index():
     files = {name.replace(".html", "") for name in listdir("./docs")}
-    ignore_files = set(["TODO", "index"])
+    ignore_files = set(["TODO", "index", ".DS_Store"])
     files = files - ignore_files
-    html = "<h1>Lista de páginas disponíveis:</h1>"
+    today = date.today()
+    dia = today.strftime("%d/%m/%Y")
+    html = f"<h1> Sobre: </h1><p>Esse site contém todas anotações da pesquisa genealógica feita por mim (Lyssa Scherer) e é constantemente modificada. Abaixo você pode encontrar o nome de todas as pessoas que estão presentes na minha árvore, alem de algumas páginas contendo documentos e observações. Caso tenha algo para contrbiuir, entre em contato pelo email <b>lyssa.scherer@gmail.com</b>!</p><p><b>Última modificação: {dia}</b></p>"
+    html += "<h1>Lista de páginas disponíveis:</h1>"
     for name in files:
         link = name.replace(" ","%20").replace("?","%3F")
-        html += f'<p><a href="{link}.html">{name}</a>'
+        html += f'<p><a href="{link}.html">{name}</a></p>'
     full_html = create_full_html(html, "Inicio")
     store_updated_file("index", full_html)
 
@@ -78,6 +82,24 @@ def create_full_html(html_body, title):
     style = """<style>
         p {
         padding: 0 5em;
+        }
+        .navbar {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: #333;
+        }
+        .navbar a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            }
+
+        .navbar a:hover {
+            background-color: #111;
         }
 
         </style>"""
@@ -91,6 +113,9 @@ def create_full_html(html_body, title):
     </head>
 
     <body>
+    <ul class="navbar">
+        <li><a href="index.html">Início</a></li>
+    </ul>
     <h1>{title}</h1>
     {html_body}
     </body>
