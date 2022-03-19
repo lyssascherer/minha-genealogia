@@ -84,23 +84,10 @@ def create_full_html(html_body, title):
         padding: 0 5em;
         }
         .navbar {
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
-                background-color: #333;
+                list-style: none;
+                font-weight: bold;
         }
-        .navbar a {
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            }
 
-        .navbar a:hover {
-            background-color: #111;
-        }
 
         </style>"""
     final_html = f'''<!DOCTYPE html>
@@ -109,8 +96,10 @@ def create_full_html(html_body, title):
     <head>
     <meta charset="UTF-8">
     <title>{title}</title>
+    <link rel="stylesheet" href="tufte.css"/>
     {style}
     </head>
+
 
     <body>
     <ul class="navbar">
