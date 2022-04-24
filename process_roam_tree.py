@@ -5,6 +5,7 @@ import shutil
 import sys
 from os import listdir
 from datetime import date
+from git import Repo
 
 def unzip_roam(filename):
     with zipfile.ZipFile(f"{filename}.zip", 'r') as zip_ref:
@@ -64,6 +65,12 @@ def process_ref(ref_name):
     store_updated_file(ref_name, final_html)
     return set(refs)
 
+def modified_pages(files):
+    ignore_files = set(["TODO", "index", ".DS_Store"])
+    files = {name.replace(".html", "").replace("docs/", "") for name in files if "docs/" in name}
+    files = [f'<a href="{name.replace(" ","%20").replace("?","%3F")}.html">{name}</a>' for name in files if name not in ignore_files]
+    return ", ".join(files)
+
 def create_index():
     files = {name.replace(".html", "") for name in listdir("./docs")}
     ignore_files = set(["TODO", "index", ".DS_Store"])
@@ -71,6 +78,10 @@ def create_index():
     today = date.today()
     dia = today.strftime("%d/%m/%Y")
     html = f"<h1> Sobre: </h1><p>Esse site contém todas anotações da pesquisa genealógica feita por mim (Lyssa Scherer) e é constantemente modificada. Abaixo você pode encontrar o nome de todas as pessoas que estão presentes na minha árvore, alem de algumas páginas contendo documentos e observações. Caso tenha algo para contrbiuir, entre em contato pelo email <b>lyssa.scherer@gmail.com</b>!</p><p><b>Última modificação: {dia}</b></p>"
+    changed_files, untracked_files = get_git_changes()
+    html += f"<p>Páginas modificadas: {modified_pages(changed_files)} </p>"
+    html += f"<p>Páginas adicionadas: {modified_pages(untracked_files)} </p>"
+    
     html += "<h1>Lista de páginas disponíveis:</h1>"
     for name in files:
         link = name.replace(" ","%20").replace("?","%3F")
@@ -142,6 +153,18 @@ def example():
     roam_filename = "Roam-Export-1647102847501"
     starter_name = "Lyssa Priscyla Scherer"
     process_tree(starter_name, roam_filename)
+
+def get_git_changes():
+    repo = Repo()
+    changed_files = [ item.a_path.split("/")[1] for item in repo.index.diff(None) if "docs/" in item.a_path]
+    untracked_files = [file.split("/")[1] for file in repo.untracked_files if "docs/" in file]
+    return changed_files, untracked_files
+
+def modified_pages(files):
+    ignore_files = set(["TODO", "index", ".DS_Store"])
+    files = {name.replace(".html", "") for name in files}
+    files = [f'<a href="{name.replace(" ","%20").replace("?","%3F")}.html">{name}</a>' for name in files if name not in ignore_files]
+    return ", ".join(files)
 
 if __name__ == "__main__":
     roam_filename = sys.argv[1]#"Roam-Export-1647102847501"
