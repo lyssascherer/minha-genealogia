@@ -79,9 +79,9 @@ def create_index():
     today = date.today()
     dia = today.strftime("%d/%m/%Y")
     html = f"<h1>Sobre:</h1><p>Esse site contém todas anotações da pesquisa genealógica feita por mim (Lyssa Scherer) e é constantemente modificada. Abaixo você pode encontrar o nome de todas as pessoas que estão presentes na minha árvore, alem de algumas páginas contendo documentos e observações. Caso tenha algo para contrbiuir, entre em contato pelo email <b>lyssa.scherer@gmail.com</b>!</p><p><b>Última modificação: {dia}</b></p>"
-    changed_files, untracked_files = get_git_changes()
-    html += f"<p>Páginas modificadas: {modified_pages(changed_files)} </p>"
-    html += f"<p>Páginas adicionadas: {modified_pages(untracked_files)} </p>"
+    # changed_files, untracked_files = get_git_changes()
+    # html += f"<p>Páginas modificadas: {modified_pages(changed_files)} </p>"
+    # html += f"<p>Páginas adicionadas: {modified_pages(untracked_files)} </p>"
 
     html += "<h1>Lista de páginas disponíveis:</h1>"
     for name in files:
@@ -130,6 +130,7 @@ def text_to_html(text, title):
         html = '<a href="javascript:history.back()">Essa pagina ainda não foi criada. Volte para a página anterior!</a>'
     final_html = create_full_html(html, title)
     return final_html
+
 def remove_unused_files(imported_refs):
     files = {name.replace(".html", "") for name in listdir("./docs")}
     old_files = files - imported_refs - {'index', 'tufte.css', 'et-book', '.DS_Store'}
