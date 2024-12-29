@@ -62,6 +62,7 @@ def process_ref(ref_name):
     text = replace_hashtags(text)
     refs = get_refs_on_text(text)
     text = rewrite_text_with_links(text, refs)
+    text = text.replace(" **", "**")
     final_html = text_to_html(text, ref_name)
     store_updated_file(ref_name, final_html)
     return set(refs)
@@ -176,5 +177,5 @@ def modified_pages(files):
 
 if __name__ == "__main__":
     roam_filename = sys.argv[1]#"Roam-Export-1647102847501"
-    starter_name = "Lyssa Priscyla Scherer"
+    starter_name = "Lyssa Priscyla Scherer (1995)"
     process_tree(starter_name, roam_filename)
